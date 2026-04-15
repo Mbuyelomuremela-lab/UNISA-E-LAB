@@ -1,0 +1,150 @@
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: #f4f7fb;
+  color: #2c3e50;
+}
+
+.navbar-brand {
+  font-weight: 700;
+}
+
+.sidebar {
+  width: 240px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: #1f2937;
+  color: #f9fafb;
+  padding-top: 25px;
+  overflow-y: auto;
+}
+
+.sidebar a {
+  color: #cbd5e1;
+  transition:
+    transform 0.16s ease,
+    background 0.16s ease,
+    color 0.16s ease;
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+
+.sidebar a:hover,
+.sidebar a:focus {
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  transform: translateX(8px);
+}
+
+.sidebar a.active {
+  background: rgba(37, 99, 235, 0.18);
+  color: #ffffff;
+  transform: translateX(12px);
+}
+
+.content-wrapper {
+  margin-left: 240px;
+  padding: 20px 24px 24px;
+}
+
+.topbar + .container,
+.topbar + .container-fluid {
+  padding-top: 72px;
+}
+
+.card-scrollable {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.page-header {
+  margin-bottom: 24px;
+}
+
+.card {
+  border-radius: 14px;
+}
+
+.table tbody tr.table-primary {
+  background-color: rgba(37, 99, 235, 0.12);
+}
+
+.btn-top-action {
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease,
+    background-color 0.16s ease;
+}
+
+.btn-top-action:hover,
+.btn-top-action:focus {
+  transform: translateX(4px);
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.14);
+}
+
+.topbar {
+  position: fixed;
+  width: calc(100% - 240px);
+  left: 240px;
+  top: 0;
+  z-index: 1000;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+@media (max-width: 992px) {
+  .sidebar,
+  .topbar {
+    position: static;
+    width: 100%;
+  }
+  .content-wrapper,
+  .topbar + .container,
+  .topbar + .container-fluid {
+    margin-left: 0;
+    padding-top: 20px;
+  }
+}
+
+.card-title {
+  font-size: 1.1rem;
+}
+
+.form-label {
+  font-weight: 600;
+}
+
+.btn-primary {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+.btn-primary:hover {
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.login-card {
+  max-width: 420px;
+  margin: 80px auto;
+}
+
+.login-brand {
+  font-size: 1.8rem;
+  letter-spacing: 0.03em;
+}
+
+.toast {
+  border-radius: 12px;
+}
+
+.card-body {
+  margin-top: 70px;
+}
+
+.alert {
+  width: 40%;
+  margin-left: auto;
+  margin-right: auto;
+}

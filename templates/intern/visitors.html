@@ -1,0 +1,203 @@
+{% extends 'intern_base.html' %} {% block title %}Visitor History - Sunnyside
+Trainee{% endblock %} {% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+  <div>
+    <h2>Visitor History</h2>
+    <p class="text-muted">Register new visitors and view recent history.</p>
+  </div>
+</div>
+<div class="card mb-4 shadow-sm p-4">
+  <h5 class="card-title">Register Visitor</h5>
+  <form method="post" action="/intern/visitors">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Full Name</label>
+        <input name="full_name" class="form-control" required />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Category</label>
+        <select
+          id="visitor-category"
+          name="category"
+          class="form-select"
+          required
+        >
+          <option>educator</option>
+          <option>principal</option>
+          <option>deputy</option>
+          <option>UNISA student</option>
+          <option>school learner</option>
+          <option>other</option>
+        </select>
+      </div>
+      <div class="col-md-6" id="student-number-group" style="display: none">
+        <label class="form-label">Student Number</label>
+        <input name="student_number" class="form-control" />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Email</label>
+        <input name="email" type="email" class="form-control" />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Phone</label>
+        <input name="phone" class="form-control" />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Reason</label>
+        <select name="reason" class="form-select" required>
+          <option>application</option>
+          <option>registration</option>
+          <option>internet access</option>
+          <option>workshop</option>
+          <option>enquiries</option>
+          <option>other</option>
+        </select>
+      </div>
+    </div>
+    <div class="mt-3">
+      <button type="submit" class="btn btn-primary">Register Visitor</button>
+    </div>
+  </form>
+</div>
+<div class="card shadow-sm p-4">
+  <h5 class="card-title">Recent Visitor Log</h5>
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Student Number</th>
+          <th>Reason</th>
+          <th>Check-in</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for visitor in visitors %}
+        <tr>
+          <td>{{ visitor.full_name }}</td>
+          <td>{{ visitor.category }}</td>
+          <td>{{ visitor.email or '-' }}</td>
+          <td>{{ visitor.phone or '-' }}</td>
+          <td>{{ visitor.student_number or '-' }}</td>
+          <td>{{ visitor.reason }}</td>
+          <td>{{ visitor.check_in.strftime('%Y-%m-%d %H:%M') }}</td>
+          <td>
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-primary me-2"
+              data-bs-toggle="modal"
+              data-bs-target="#editVisitorModal"
+              data-visitor-id="{{ visitor.id }}"
+              data-visitor-name="{{ visitor.full_name }}"
+              data-visitor-category="{{ visitor.category }}"
+              data-visitor-student-number="{{ visitor.student_number or '' }}"
+              data-visitor-email="{{ visitor.email or '' }}"
+              data-visitor-phone="{{ visitor.phone or '' }}"
+              data-visitor-reason="{{ visitor.reason }}"
+            >
+              Edit
+            </button>
+            <form
+              method="post"
+              action="/intern/visitors/{{ visitor.id }}/delete"
+              class="d-inline"
+              onsubmit="return confirm('Delete this visitor record?');"
+            >
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <button type="submit" class="btn btn-sm btn-outline-danger">
+                Delete
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="editVisitorModal"
+  tabindex="-1"
+  aria-labelledby="editVisitorModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editVisitorModalLabel">Edit Visitor</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <form id="editVisitorForm" method="post" action="">
+        <div class="modal-body">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Full Name</label>
+              <input id="edit-visitor-name" name="full_name" class="form-control" required />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Category</label>
+              <select
+                id="edit-visitor-category"
+                name="category"
+                class="form-select"
+                required
+              >
+                <option>educator</option>
+                <option>principal</option>
+                <option>deputy</option>
+                <option>UNISA student</option>
+                <option>school learner</option>
+                <option>other</option>
+              </select>
+            </div>
+            <div class="col-md-6" id="edit-student-number-group" style="display: none">
+              <label class="form-label">Student Number</label>
+              <input id="edit-student-number" name="student_number" class="form-control" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Email</label>
+              <input id="edit-visitor-email" name="email" type="email" class="form-control" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Phone</label>
+              <input id="edit-visitor-phone" name="phone" class="form-control" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Reason</label>
+              <select id="edit-visitor-reason" name="reason" class="form-select" required>
+                <option>application</option>
+                <option>registration</option>
+                <option>internet access</option>
+                <option>workshop</option>
+                <option>enquiries</option>
+                <option>other</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %} {% block scripts %}
+<script src="/static/js/intern.js"></script>
+{% endblock %}

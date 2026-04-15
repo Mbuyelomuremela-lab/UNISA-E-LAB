@@ -1,0 +1,49 @@
+{% extends 'base.html' %} {% block title %}UNISA e-Lab | Login{% endblock %} {%
+block body %}
+<div class="container">
+  <div class="card login-card shadow-sm">
+    <div class="card-body">
+      <div class="text-center mb-4">
+        <img
+          src="/static/images/logo.png"
+          alt="Sunnyside logo"
+          class="mb-3"
+          style="max-width: 120px"
+        />
+        <h2 class="login-brand">UNISA e-Lab</h2>
+        <p class="text-muted">Admin and Trainee access portal</p>
+      </div>
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %}
+      <div class="alert alert-{{ category }}">{{ message }}</div>
+      {% endfor %} {% endif %} {% endwith %}
+      <form method="post" action="/login">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            name="email"
+            required
+          />
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            name="password"
+            required
+          />
+        </div>
+        <button type="submit" class="btn btn-primary w-100" data-loading="true">
+          Continue
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

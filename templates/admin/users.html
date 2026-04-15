@@ -1,0 +1,377 @@
+{% extends 'admin_base.html' %} {% block title %}Manage Users - Sunnyside
+Admin{% endblock %} {% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+  <div>
+    <h2>Users</h2>
+    <p class="text-muted">Create, edit, and manage trainees and admins.</p>
+  </div>
+  <div class="d-flex gap-2">
+    <button
+      class="btn btn-primary btn-top-action"
+      data-bs-toggle="modal"
+      data-bs-target="#addUserModal"
+    >
+      Add New User
+    </button>
+    <button
+      id="editSelectedUser"
+      class="btn btn-outline-primary btn-top-action"
+      disabled
+    >
+      Edit Selected
+    </button>
+    <button
+      id="resetSelectedUser"
+      class="btn btn-outline-secondary btn-top-action"
+      disabled
+    >
+      Reset Selected
+    </button>
+    <button
+      id="deleteSelectedUser"
+      class="btn btn-outline-danger btn-top-action"
+      disabled
+    >
+      Delete Selected
+    </button>
+  </div>
+</div>
+<div class="card shadow-sm p-4 selectable-user-table">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Full Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Lab</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr
+          class="selectable-row"
+          data-item-id="{{ user.id }}"
+          data-full-name="{{ user.full_name }}"
+          data-name="{{ user.full_name }}"
+          data-email="{{ user.email }}"
+          data-role="{{ user.role }}"
+          data-status="{{ user.status }}"
+          data-lab="{{ user.lab_id or '' }}"
+        >
+          <td><span class="text-muted">Select</span></td>
+          <td>{{ user.full_name }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ 'trainee' if user.role == 'intern' else user.role }}</td>
+          <td>{{ user.status }}</td>
+          <td>{{ user.lab.name if user.lab else '-' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <form method="post" action="/admin/users/add">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <div class="modal-header">
+          <h5 class="modal-title">Add New User</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">Full Name</label>
+              <input name="full_name" class="form-control" required />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Email</label>
+              <input name="email" type="email" class="form-control" required />
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">Role</label>
+              <select name="role" class="form-select">
+                <option value="intern">trainee</option>
+                {% if current_user.role == 'system_admin' %}
+                <option value="admin">admin</option>
+                <option value="system_admin">system_admin</option>
+                {% endif %}
+              </select>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">Status</label>
+              <select name="status" class="form-select">
+                {% for status in status_options %}
+                <option value="{{ status }}">{{ status }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Lab</label>
+              <select name="lab_id" class="form-select">
+                <option value="">None</option>
+                {% for lab in labs %}
+                <option value="{{ lab.id }}">{{ lab.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary">Create User</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="editUserModal"
+  tabindex="-1"
+  aria-labelledby="editUserModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form id="editUserForm" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <div class="modal-header">
+          <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Full Name</label>
+              <input
+                id="edit-user-name"
+                name="full_name"
+                class="form-control"
+                required
+              />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Email</label>
+              <input
+                id="edit-user-email"
+                name="email"
+                type="email"
+                class="form-control"
+                required
+              />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Role</label>
+              <select id="edit-user-role" name="role" class="form-select">
+                <option value="intern">trainee</option>
+                {% if current_user.role == 'system_admin' %}
+                <option value="admin">admin</option>
+                <option value="system_admin">system_admin</option>
+                {% endif %}
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Status</label>
+              <select id="edit-user-status" name="status" class="form-select">
+                {% for status in status_options %}
+                <option value="{{ status }}">{{ status }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Lab</label>
+              <select id="edit-user-lab" name="lab_id" class="form-select">
+                <option value="">None</option>
+                {% for lab in labs %}
+                <option value="{{ lab.id }}">{{ lab.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="resetPasswordModal"
+  tabindex="-1"
+  aria-labelledby="resetPasswordModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="resetPasswordForm" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <div class="modal-header">
+          <h5 class="modal-title" id="resetPasswordModalLabel">
+            Reset Password
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-3">
+            Reset the password for <strong id="reset-user-name"></strong>.
+          </p>
+          <p class="text-muted">
+            A new secure password will be generated and emailed to the user.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary">Reset Password</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<form id="selectedActionFormUser" method="post" style="display: none">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+</form>
+
+<div
+  class="modal fade"
+  id="userCredentialsModal"
+  tabindex="-1"
+  aria-labelledby="userCredentialsModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="userCredentialsModalLabel">
+          New User Credentials
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p>User created successfully. Use the credentials below to login.</p>
+        <dl class="row">
+          <dt class="col-sm-4">Email</dt>
+          <dd class="col-sm-8"><strong id="newUserEmail"></strong></dd>
+          <dt class="col-sm-4">Password</dt>
+          <dd class="col-sm-8"><strong id="newUserPassword"></strong></dd>
+        </dl>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="resetCredentialsModal"
+  tabindex="-1"
+  aria-labelledby="resetCredentialsModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="resetCredentialsModalLabel">
+          Password Reset
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p>Password reset successfully. Use the credentials below to login.</p>
+        <dl class="row">
+          <dt class="col-sm-4">Email</dt>
+          <dd class="col-sm-8"><strong id="resetUserEmail"></strong></dd>
+          <dt class="col-sm-4">Password</dt>
+          <dd class="col-sm-8"><strong id="resetUserPassword"></strong></dd>
+        </dl>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if new_user_credentials %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("newUserEmail").textContent =
+      "{{ new_user_credentials.email|e }}";
+    document.getElementById("newUserPassword").textContent =
+      "{{ new_user_credentials.password|e }}";
+    new bootstrap.Modal(document.getElementById("userCredentialsModal")).show();
+  });
+</script>
+{% endif %} {% if reset_user_credentials %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("resetUserEmail").textContent =
+      "{{ reset_user_credentials.email|e }}";
+    document.getElementById("resetUserPassword").textContent =
+      "{{ reset_user_credentials.password|e }}";
+    new bootstrap.Modal(
+      document.getElementById("resetCredentialsModal"),
+    ).show();
+  });
+</script>
+{% endif %} {% endblock %}

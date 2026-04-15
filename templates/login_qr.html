@@ -1,0 +1,23 @@
+{% extends 'base.html' %} {% block title %}Scan QR - UNISA e-Lab | Login{%
+endblock %} {% block body %}
+<div class="container">
+  <div class="card login-card shadow-sm text-center">
+    <div class="card-body">
+      <h3>Scan the QR code</h3>
+      <p class="text-muted">
+        Open the camera on your mobile device and scan the code below.
+      </p>
+      <img
+        src="data:image/png;base64,{{ qr_image }}"
+        class="img-fluid mb-3"
+        alt="Login QR Code"
+      />
+      <p class="small text-muted">
+        If you cannot scan it, open this link on your device:
+      </p>
+      <p><a href="{{ qr_link }}" target="_blank">{{ qr_link }}</a></p>
+      <a href="/login" class="btn btn-outline-secondary mt-3">Back to login</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends 'admin_base.html' %} {% block title %}Trainee Login Activity -
+Sunnyside Admin{% endblock %} {% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+  <div>
+    <h2>Trainee Login Activity</h2>
+    <p class="text-muted">Track trainee daily sign-in and sign-out records.</p>
+  </div>
+</div>
+
+<div class="card mb-4 shadow-sm p-4">
+  <form class="row g-3" method="get">
+    <div class="col-md-3">
+      <label class="form-label">Province</label>
+      <select name="province" class="form-select">
+        <option value="">All</option>
+        {% for province in provinces %}
+        <option
+          value="{{ province.id }}"
+          {% if selected_province == province.id|string %}selected{% endif %}
+        >
+          {{ province.name }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Lab</label>
+      <select name="lab" class="form-select">
+        <option value="">All</option>
+        {% for lab in labs %}
+        <option
+          value="{{ lab.id }}"
+          {% if selected_lab == lab.id|string %}selected{% endif %}
+        >
+          {{ lab.name }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Date</label>
+      <input
+        type="date"
+        name="date"
+        class="form-control"
+        value="{{ selected_date or '' }}"
+      />
+    </div>
+    <div class="col-md-3 align-self-end">
+      <button class="btn btn-primary w-100">Search</button>
+    </div>
+  </form>
+</div>
+
+<div class="card shadow-sm p-4">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Trainee</th>
+          <th>Lab</th>
+          <th>Time In</th>
+          <th>Time Out</th>
+          <th>Geolocation</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in activity_rows %}
+        <tr>
+          <td>{{ row.date }}</td>
+          <td>{{ row.user_name }}</td>
+          <td>{{ row.lab_name }}</td>
+          <td>{{ row.first_login.strftime('%H:%M') }}</td>
+          <td>{{ row.last_logout.strftime('%H:%M') }}</td>
+          <td>
+            {% if row.geo_passed %}
+            <span class="badge bg-success">Passed</span>
+            {% else %}
+            <span class="badge bg-danger">Failed</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

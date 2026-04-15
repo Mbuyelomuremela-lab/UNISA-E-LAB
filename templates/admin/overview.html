@@ -1,0 +1,299 @@
+{% extends 'admin_base.html' %} {% block title %}Admin Overview - Sunnyside{% endblock %} {% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+  <div>
+    <h2>Overview</h2>
+    <p class="text-muted">
+      Campus performance, staffing, assets, and visitor summaries.
+    </p>
+  </div>
+</div>
+<div class="row g-4">
+  <div class="col-md-4">
+    <div class="card shadow-sm p-4">
+      <h6>Total System Users</h6>
+      <p class="display-6 mb-1">{{ stats.total_users }}</p>
+      <div class="small text-muted">
+        Trainees: {{ stats.trainee_count }} | HQ users: {{ stats.hq_count }}
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card shadow-sm p-4">
+      <h6>Active vs Resigned</h6>
+      <p class="display-6 mb-1">
+        {{ stats.working_count }} / {{ stats.resigned_count }}
+      </p>
+      <div class="small text-muted">Working / Resigned trainees</div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card shadow-sm p-4">
+      <h6>Labs</h6>
+      <p class="display-6 mb-1">{{ stats.total_labs }}</p>
+      <div class="small text-muted">
+        Active: {{ stats.active_labs }} | Inactive: {{ stats.inactive_labs }}
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row g-4 mt-3">
+  <div class="col-md-4">
+    <div class="card shadow-sm p-4">
+      <h6>Total Assets</h6>
+      <p class="display-6">{{ stats.total_assets }}</p>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card shadow-sm p-4">
+      <h6>Visitors</h6>
+      <p class="display-6">{{ stats.total_visitors }}</p>
+      <div class="small text-muted">
+        Today ({{ stats.current_date }}): {{ stats.visitors_today }}
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card shadow-sm p-4">
+      <h6>Current Date</h6>
+      <p class="display-6">{{ stats.current_date }}</p>
+      <div class="small text-muted">Review today's activity at a glance.</div>
+    </div>
+  </div>
+</div>
+<div class="card mt-4 shadow-sm p-4">
+  <h5 class="card-title">Filters</h5>
+  <form class="row g-3" method="get">
+    <div class="col-md-3">
+      <label class="form-label">Province</label>
+      <select name="province" class="form-select">
+        <option value="">All</option>
+        {% for province in provinces %}
+        <option value="{{ province.id }}" {% if selected_province == province.id|string %}selected{% endif %}>
+          {{ province.name }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Lab</label>
+      <select name="lab" class="form-select">
+        <option value="">All</option>
+        {% for lab in labs %}
+        <option value="{{ lab.id }}" {% if selected_lab == lab.id|string %}selected{% endif %}>
+          {{ lab.name }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Asset Type</label>
+      <select name="asset_type" class="form-select">
+        <option value="">All</option>
+        {% for type in asset_types %}
+        <option value="{{ type }}" {% if selected_asset_type == type %}selected{% endif %}>
+          {{ type }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Visitor Category</label>
+      <select name="visitor_category" class="form-select">
+        <option value="">All</option>
+        {% for category in categories %}
+        <option value="{{ category }}" {% if selected_visitor_category == category %}selected{% endif %}>
+          {{ category }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Date</label>
+      <input
+        type="date"
+        name="date"
+        class="form-control"
+        value="{{ selected_date or stats.current_date }}"
+      />
+    </div>
+    <div class="col-md-2 align-self-end">
+      <button class="btn btn-primary w-100">Apply Filters</button>
+    </div>
+  </form>
+</div>
+<div class="row g-4 mt-4">
+  <div class="col-lg-6">
+    <div class="card shadow-sm p-4">
+      <h5 class="card-title">Labs by Province</h5>
+      <div class="table-responsive">
+        <table class="table table-sm table-hover">
+          <thead>
+            <tr>
+              <th>Province</th>
+              <th>Total Labs</th>
+              <th>Active</th>
+              <th>Inactive</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in labs_by_province %}
+            <tr>
+              <td>{{ item.province.name }}</td>
+              <td>{{ item.total }}</td>
+              <td>{{ item.active }}</td>
+              <td>{{ item.inactive }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card shadow-sm p-4">
+      <h5 class="card-title">Assets by Type</h5>
+      <div class="table-responsive">
+        <table class="table table-sm table-hover">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Count</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for asset_type, count in assets_by_type %}
+            <tr>
+              <td>{{ asset_type }}</td>
+              <td>{{ count }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row g-4 mt-4">
+  <div class="col-lg-6">
+    <div class="card shadow-sm p-4">
+      <h5 class="card-title">Assets by Lab</h5>
+      <div class="table-responsive">
+        <table class="table table-sm table-hover">
+          <thead>
+            <tr>
+              <th>Lab</th>
+              <th>Assets</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for lab_name, count in assets_by_lab %}
+            <tr>
+              <td>{{ lab_name }}</td>
+              <td>{{ count }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card shadow-sm p-4">
+      <h5 class="card-title">Visitors by Province</h5>
+      <div class="table-responsive">
+        <table class="table table-sm table-hover">
+          <thead>
+            <tr>
+              <th>Province</th>
+              <th>Visitors</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for province_name, count in visitor_counts_by_province %}
+            <tr>
+              <td>{{ province_name }}</td>
+              <td>{{ count }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row g-4 mt-4">
+  <div class="col-lg-6">
+    <div class="card shadow-sm p-4">
+      <h5 class="card-title">Visitors by Lab</h5>
+      <div class="table-responsive">
+        <table class="table table-sm table-hover">
+          <thead>
+            <tr>
+              <th>Lab</th>
+              <th>Visitors</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for lab_name, count in visitor_counts_by_lab %}
+            <tr>
+              <td>{{ lab_name }}</td>
+              <td>{{ count }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card shadow-sm p-4">
+      <h5 class="card-title">Visitor Categories</h5>
+      <div class="table-responsive">
+        <table class="table table-sm table-hover">
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Count</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for category, count in visitor_counts_by_category %}
+            <tr>
+              <td>{{ category }}</td>
+              <td>{{ count }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="card shadow-sm p-4 mt-4">
+  <h5 class="card-title">Recent Visitor Records</h5>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Lab</th>
+          <th>Reason</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for visitor in recent_visitors %}
+        <tr>
+          <td>{{ visitor.check_in.strftime('%Y-%m-%d %H:%M') }}</td>
+          <td>{{ visitor.full_name }}</td>
+          <td>{{ visitor.category }}</td>
+          <td>{{ visitor.lab.name }}</td>
+          <td>{{ visitor.reason }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

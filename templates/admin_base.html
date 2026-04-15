@@ -1,0 +1,92 @@
+{% extends 'base.html' %} {% block body %}
+<div class="sidebar d-none d-lg-block">
+  <div class="px-3 py-4 text-white">
+    <div class="mb-4 d-flex align-items-center gap-2">
+      <!--<img
+        src="/static/images/logo.png"
+        alt="Sunnyside logo"
+        style="width: 42px; height: auto"
+      />-->
+      <div>
+        <h4>Admin</h4>
+        <p class="text-muted small">Campus management portal</p>
+      </div>
+    </div>
+    <nav class="nav flex-column">
+      <a
+        class="nav-link text-white {% if request.path.startswith('/admin/overview') %}active{% endif %}"
+        href="/admin/overview"
+        >Overview</a
+      >
+      <a
+        class="nav-link text-white {% if request.path.startswith('/admin/users') %}active{% endif %}"
+        href="/admin/users"
+        >Users</a
+      >
+      <a
+        class="nav-link text-white {% if request.path.startswith('/admin/assets') %}active{% endif %}"
+        href="/admin/assets"
+        >Assets</a
+      >
+      <a
+        class="nav-link text-white {% if request.path.startswith('/admin/visitors') %}active{% endif %}"
+        href="/admin/visitors"
+        >Visit History</a
+      >
+      <a
+        class="nav-link text-white {% if request.path.startswith('/admin/login-activity') %}active{% endif %}"
+        href="/admin/login-activity"
+        >Trainee Login Activity</a
+      >
+      <a
+        class="nav-link text-white {% if request.path.startswith('/admin/labs') %}active{% endif %}"
+        href="/admin/labs"
+        >Labs & Provinces</a
+      >
+      <a class="nav-link text-white" href="/logout">Logout</a>
+    </nav>
+  </div>
+</div>
+<nav class="navbar topbar navbar-light bg-white shadow-sm px-4">
+  <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+    <img
+      src="/static/images/logo.png"
+      alt="Logo"
+      style="width: 32px; height: auto"
+    />
+    Sunnyside Campus, Building 10
+  </a>
+  <div class="d-flex align-items-center gap-3">
+    <div class="text-end">
+      <div class="fw-bold">{{ current_user.full_name }}</div>
+      <div class="small text-muted">Admin access</div>
+    </div>
+    <a class="btn btn-sm btn-outline-secondary" href="/change-password"
+      >Change Password</a
+    >
+    <a class="btn btn-sm btn-outline-secondary" href="/logout">Logout</a>
+  </div>
+</nav>
+<div class="container-fluid mt-3">
+  {% with messages = get_flashed_messages(with_categories=true) %} {% if
+  messages %} {% for category, message in messages %}
+  <div
+    class="alert alert-{{ category }} alert-dismissible fade show"
+    role="alert"
+  >
+    {{ message }}
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+    ></button>
+  </div>
+  {% endfor %} {% endif %} {% endwith %}
+</div>
+<div class="content-wrapper">
+  <div class="container-fluid">{% block content %}{% endblock %}</div>
+</div>
+{% endblock %} {% block scripts %}
+<script src="/static/js/admin.js"></script>
+{% endblock %}

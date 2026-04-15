@@ -1,0 +1,78 @@
+{% extends 'base.html' %} {% block body %}
+<div class="sidebar d-none d-lg-block">
+  <div class="px-3 py-4 text-white">
+    <div class="mb-4 d-flex align-items-center gap-2">
+      <!-- <img
+        src="/static/images/logo.png"
+        alt="Sunnyside logo"
+        style="width: 42px; height: auto"
+      />-->
+      <div>
+        <h4>
+          {{ current_user.lab.name if current_user.lab else 'UNISA e-Lab' }}
+          Trainee
+        </h4>
+        <p class="text-muted small">Manage assets and visitors</p>
+      </div>
+    </div>
+    <nav class="nav flex-column">
+      <a
+        class="nav-link text-white {% if request.path.startswith('/intern/dashboard') %}active{% endif %}"
+        href="/intern/dashboard"
+        >Dashboard Home</a
+      >
+      <a
+        class="nav-link text-white {% if request.path.startswith('/intern/assets') %}active{% endif %}"
+        href="/intern/assets"
+        >Manage Assets</a
+      >
+      <a
+        class="nav-link text-white {% if request.path.startswith('/intern/visitors') %}active{% endif %}"
+        href="/intern/visitors"
+        >Visitor History</a
+      >
+      <a class="nav-link text-white" href="/logout">Logout</a>
+    </nav>
+  </div>
+</div>
+<nav class="navbar topbar navbar-light bg-white shadow-sm px-4">
+  <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+    <img
+      src="/static/images/logo.png"
+      alt="Logo"
+      style="width: 32px; height: auto"
+    />
+    {{ current_user.lab.name if current_user.lab else 'UNISA e-Lab' }}
+  </a>
+  <div class="d-flex align-items-center gap-3">
+    <div class="text-end">
+      <div class="fw-bold">{{ current_user.full_name }}</div>
+      <div class="small text-muted">Trainee access</div>
+    </div>
+    <a class="btn btn-sm btn-outline-secondary" href="/change-password"
+      >Change Password</a
+    >
+    <a class="btn btn-sm btn-outline-secondary" href="/logout">Logout</a>
+  </div>
+</nav>
+<div class="container-fluid mt-3">
+  {% with messages = get_flashed_messages(with_categories=true) %} {% if
+  messages %} {% for category, message in messages %}
+  <div
+    class="alert alert-{{ category }} alert-dismissible fade show"
+    role="alert"
+  >
+    {{ message }}
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+    ></button>
+  </div>
+  {% endfor %} {% endif %} {% endwith %}
+</div>
+<div class="content-wrapper">
+  <div class="container-fluid">{% block content %}{% endblock %}</div>
+</div>
+{% endblock %}

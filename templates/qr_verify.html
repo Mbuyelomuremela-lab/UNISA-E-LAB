@@ -1,0 +1,22 @@
+{% extends 'base.html' %} {% block title %}Verify Location - UNISA e-Lab |
+Login{% endblock %} {% block body %}
+<div class="container">
+  <div class="card login-card shadow-sm text-center">
+    <div class="card-body">
+      <h3>Verify Location</h3>
+      <p class="text-muted">
+        Tap the button below to share your location and complete login.
+      </p>
+      <button id="locate-button" class="btn btn-primary">Share Location</button>
+      <p class="text-muted small mt-3">
+        Your location is only used to verify access from your assigned lab.
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block scripts %}
+<script src="/static/js/login.js"></script>
+<script>
+  initQrVerify("{{ token }}");
+</script>
+{% endblock %}

@@ -1,0 +1,389 @@
+{% extends 'admin_base.html' %} {% block title %}Manage Assets - Sunnyside
+Admin{% endblock %} {% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+  <div>
+    <h2>Assets</h2>
+    <p class="text-muted">Track and manage all assets across labs.</p>
+  </div>
+  <div class="d-flex gap-2">
+    <button
+      class="btn btn-primary btn-top-action"
+      data-bs-toggle="modal"
+      data-bs-target="#addAssetModal"
+    >
+      Add New Asset
+    </button>
+    <button
+      id="editSelectedAsset"
+      class="btn btn-outline-primary btn-top-action"
+      disabled
+    >
+      Edit Selected
+    </button>
+    <button
+      id="deleteSelectedAsset"
+      class="btn btn-outline-danger btn-top-action"
+      disabled
+    >
+      Delete Selected
+    </button>
+  </div>
+</div>
+<div class="card mb-4 shadow-sm p-4">
+  <h5 class="card-title">Filter Assets</h5>
+  <form class="row g-3" method="get">
+    <div class="col-md-2">
+      <label class="form-label">Province</label>
+      <select name="province" class="form-select">
+        <option value="">All</option>
+        {% for province in provinces %}
+        <option
+          value="{{ province.id }}"
+          {%
+          if
+          selected_province == "province.id|string"
+          %}selected{%
+          endif
+          %}
+        >
+          {{ province.name }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Lab</label>
+      <select name="lab" class="form-select">
+        <option value="">All</option>
+        {% for lab in labs %}
+        <option
+          value="{{ lab.id }}"
+          {%
+          if
+          selected_lab == "lab.id|string"
+          %}selected{%
+          endif
+          %}
+        >
+          {{ lab.name }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Type</label>
+      <select name="asset_type" class="form-select">
+        <option value="">All</option>
+        {% for type in asset_types %}
+        <option
+          value="{{ type }}"
+          {%
+          if
+          selected_asset_type == "type"
+          %}selected{%
+          endif
+          %}
+        >
+          {{ type }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Condition</label>
+      <select name="condition" class="form-select">
+        <option value="">All</option>
+        {% for condition in conditions %}
+        <option
+          value="{{ condition }}"
+          {%
+          if
+          selected_condition == "condition"
+          %}selected{%
+          endif
+          %}
+        >
+          {{ condition }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Status</label>
+      <select name="availability" class="form-select">
+        <option value="">All</option>
+        {% for status in statuses %}
+        <option
+          value="{{ status }}"
+          {%
+          if
+          selected_status == "status"
+          %}selected{%
+          endif
+          %}
+        >
+          {{ status }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2 align-self-end">
+      <button class="btn btn-secondary w-100">Filter</button>
+    </div>
+  </form>
+</div>
+<div class="card shadow-sm p-4 selectable-asset-table">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Name</th>
+          <th>Serial</th>
+          <th>UNISA No.</th>
+          <th>Type</th>
+          <th>Condition</th>
+          <th>Availability</th>
+          <th>Lab</th>
+          <th>Updated</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for asset in assets %}
+        <tr
+          class="selectable-row"
+          data-item-id="{{ asset.id }}"
+          data-name="{{ asset.name }}"
+          data-serial-number="{{ asset.serial_number or '' }}"
+          data-unisa-number="{{ asset.unisa_number or '' }}"
+          data-type="{{ asset.asset_type }}"
+          data-condition="{{ asset.condition }}"
+          data-availability="{{ asset.availability }}"
+          data-comments="{{ asset.comments or '' }}"
+          data-lab="{{ asset.lab_id }}"
+        >
+          <td><span class="text-muted">Select</span></td>
+          <td>{{ asset.name }}</td>
+          <td>{{ asset.serial_number or '-' }}</td>
+          <td>{{ asset.unisa_number or '-' }}</td>
+          <td>{{ asset.asset_type }}</td>
+          <td>{{ asset.condition }}</td>
+          <td>{{ asset.availability }}</td>
+          <td>{{ asset.lab.name }}</td>
+          <td>{{ asset.updated_at.strftime('%Y-%m-%d %H:%M') }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal fade" id="addAssetModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <form method="post" action="/admin/assets">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <div class="modal-header">
+          <h5 class="modal-title">Add New Asset</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">Name</label>
+              <input name="name" class="form-control" required />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Serial Number</label>
+              <input name="serial_number" class="form-control" />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">UNISA Number</label>
+              <input name="unisa_number" class="form-control" />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Type</label>
+              <select name="asset_type" class="form-select" required>
+                {% for type in asset_types %}
+                <option value="{{ type }}">{{ type }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Condition</label>
+              <select name="condition" class="form-select" required>
+                {% for condition in conditions %}
+                <option value="{{ condition }}">{{ condition }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Availability</label>
+              <select name="availability" class="form-select" required>
+                {% for status in statuses %}
+                <option value="{{ status }}">{{ status }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Lab</label>
+              <select name="lab_id" class="form-select" required>
+                {% for lab in labs %}
+                <option value="{{ lab.id }}">{{ lab.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Comments</label>
+              <input name="comments" class="form-control" />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary">Add Asset</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="editAssetModal"
+  tabindex="-1"
+  aria-labelledby="editAssetModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <form id="editAssetForm" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <div class="modal-header">
+          <h5 class="modal-title" id="editAssetModalLabel">Edit Asset</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">Name</label>
+              <input
+                id="edit-asset-name"
+                name="name"
+                class="form-control"
+                required
+              />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Serial Number</label>
+              <input
+                id="edit-asset-serial-number"
+                name="serial_number"
+                class="form-control"
+              />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">UNISA Number</label>
+              <input
+                id="edit-asset-unisa-number"
+                name="unisa_number"
+                class="form-control"
+              />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Type</label>
+              <select
+                id="edit-asset-type"
+                name="asset_type"
+                class="form-select"
+                required
+              >
+                {% for type in asset_types %}
+                <option value="{{ type }}">{{ type }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Condition</label>
+              <select
+                id="edit-asset-condition"
+                name="condition"
+                class="form-select"
+                required
+              >
+                {% for condition in conditions %}
+                <option value="{{ condition }}">{{ condition }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Availability</label>
+              <select
+                id="edit-asset-availability"
+                name="availability"
+                class="form-select"
+                required
+              >
+                {% for status in statuses %}
+                <option value="{{ status }}">{{ status }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Lab</label>
+              <select
+                id="edit-asset-lab"
+                name="lab_id"
+                class="form-select"
+                required
+              >
+                {% for lab in labs %}
+                <option value="{{ lab.id }}">{{ lab.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Comments</label>
+              <input
+                id="edit-asset-comments"
+                name="comments"
+                class="form-control"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary">Save Asset</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<form id="selectedActionFormAsset" method="post" style="display: none">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+</form>
+{% endblock %}

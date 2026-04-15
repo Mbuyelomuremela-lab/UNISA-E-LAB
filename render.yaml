@@ -1,0 +1,30 @@
+services:
+  - type: web_service
+    name: sunnyside-lab-portal
+    env: python
+    plan: free
+    region: oregon
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: SECRET_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: SITE_URL
+        sync: false
+      - key: EMAIL_HOST
+        sync: false
+      - key: EMAIL_PORT
+        sync: false
+      - key: EMAIL_USERNAME
+        sync: false
+      - key: EMAIL_PASSWORD
+        sync: false
+      - key: EMAIL_USE_TLS
+        sync: false
+      - key: EMAIL_USE_SSL
+        sync: false
+      - key: EMAIL_DEFAULT_SENDER
+        sync: false
