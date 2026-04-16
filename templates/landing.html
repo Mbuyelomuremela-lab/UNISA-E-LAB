@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% block title %}UNISA e-Lab | Home{% endblock %}
+{% block body %}
+<header class="landing-header">
+  <div class="container d-flex flex-wrap align-items-center justify-content-between">
+    <a class="navbar-brand d-flex align-items-center" href="{{ url_for('home') }}">
+      <img src="/static/images/logo.png" alt="UNISA e-Lab logo" class="landing-logo" />
+      UNISA e-Lab
+    </a>
+    <div class="d-none d-md-flex align-items-center gap-4 landing-nav">
+      <a href="#about">About us</a>
+      <a href="#events">Upcoming events</a>
+      <a href="#contact">Contact us</a>
+    </div>
+    <a href="{{ url_for('auth.login') }}" class="btn btn-success landing-login-btn">Login</a>
+  </div>
+</header>
+
+<main class="landing-main">
+  <section class="landing-hero" id="events">
+    <div class="container text-center">
+      <h1>Events and Announcements</h1>
+      <p>
+        Discover the latest lab updates, training events, and student opportunities across the provinces.
+      </p>
+      <div class="landing-carousel" id="landingCarousel">
+        <button id="carouselPrev" class="landing-arrow" aria-label="Previous slide">&#8249;</button>
+        <div class="landing-slides">
+          {% if events %}
+          {% for event in events %}
+          <div class="landing-slide {% if loop.first %}active{% endif %}">
+            <div class="landing-slide-preview">
+              {% if event.content_type.startswith('image/') %}
+              <img src="{{ url_for('static', filename='uploads/events/' ~ event.filename) }}" alt="{{ event.title }}" />
+              {% else %}
+              <div class="pdf-placeholder">
+                <div class="pdf-icon">&#128196;</div>
+                <div class="pdf-title">{{ event.title or 'PDF Announcement' }}</div>
+                <div class="pdf-description">{{ event.description or 'Open the PDF poster to view details.' }}</div>
+                <a href="{{ url_for('static', filename='uploads/events/' ~ event.filename) }}" target="_blank" class="btn btn-outline-light btn-sm mt-3">Open poster</a>
+              </div>
+              {% endif %}
+            </div>
+            <div class="slide-text">
+              <h5>{{ event.title or 'Upcoming announcement' }}</h5>
+              <p>{{ event.description or 'Swipe through the event posters and announcements uploaded by admin.' }}</p>
+            </div>
+          </div>
+          {% endfor %}
+          {% else %}
+          <div class="landing-slide active">
+            <div class="landing-carousel-content">
+              <strong>No upcoming events yet</strong>
+              <div>Admins can upload event posters and announcement PDFs in the admin Events page.</div>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+        <button id="carouselNext" class="landing-arrow" aria-label="Next slide">&#8250;</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="landing-about" id="about">
+    <div class="container text-center">
+      <h2>About us</h2>
+      <p>
+        Some text here about what is OAU, and maybe what we do. The number of labs across the provinces and the programs we support are designed to help students learn, collaborate, and innovate.
+      </p>
+    </div>
+  </section>
+
+  <footer class="landing-footer" id="contact">
+    <div class="container text-center">
+      <div class="footer-links mb-3">
+        <span>OAU: HQ</span>
+        <span>&#128222; 072 111 1111</span>
+        <a href="https://www.example.com" target="_blank" rel="noopener">TippyTube</a>
+      </div>
+      <div>Copyright, all rights reserved. 2026</div>
+    </div>
+  </footer>
+</main>
+{% endblock %}
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const slides = Array.from(document.querySelectorAll('.landing-slide'));
+    const prev = document.getElementById('carouselPrev');
+    const next = document.getElementById('carouselNext');
+    let currentIndex = 0;
+
+    function updateSlides() {
+      slides.forEach((slide, index) => {
+        slide.classList.toggle('active', index === currentIndex);
+      });
+    }
+
+    if (slides.length > 1) {
+      prev.addEventListener('click', () => {
+        currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+        updateSlides();
+      });
+
+      next.addEventListener('click', () => {
+        currentIndex = (currentIndex + 1) % slides.length;
+        updateSlides();
+      });
+
+      setInterval(() => {
+        currentIndex = (currentIndex + 1) % slides.length;
+        updateSlides();
+      }, 8000);
+    } else {
+      prev.style.display = 'none';
+      next.style.display = 'none';
+    }
+  });
+</script>
+{% endblock %}

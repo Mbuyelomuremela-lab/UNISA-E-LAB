@@ -14,6 +14,8 @@ class Config:
     REMEMBER_COOKIE_DURATION = 3600
     PERMANENT_SESSION_LIFETIME = 1800
     INTERN_RADIUS_METERS = 250
+    EVENT_UPLOAD_FOLDER = os.path.join(basedir, 'static', 'uploads', 'events')
+    ALLOWED_EVENT_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
 
     EMAIL_HOST = os.environ.get('EMAIL_HOST')
     EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
