@@ -1,0 +1,74 @@
+{% extends 'admin_base.html' %}
+{% block title %}Admin Events - Sunnyside{% endblock %}
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+  <div>
+    <h2>Events</h2>
+    <p class="text-muted">Upload and manage upcoming event posters as images or PDFs.</p>
+  </div>
+</div>
+<div class="row g-4">
+  <div class="col-lg-5">
+    <div class="card shadow-sm p-4">
+      <h5 class="card-title">Post a new event</h5>
+      <form method="post" action="/admin/events" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <div class="mb-3">
+          <label class="form-label">Title</label>
+          <input type="text" name="title" class="form-control" placeholder="Event title" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Description</label>
+          <textarea name="description" class="form-control" rows="3" placeholder="Short announcement summary"></textarea>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Poster file</label>
+          <input type="file" name="poster_file" class="form-control" accept=".png,.jpg,.jpeg,.gif,.pdf" required />
+          <div class="form-text">Upload PNG, JPG, GIF or PDF files only.</div>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Upload Event</button>
+      </form>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <div class="card shadow-sm p-4">
+      <h5 class="card-title">Published events</h5>
+      {% if events %}
+      <div class="table-responsive">
+        <table class="table table-sm table-hover align-middle">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Type</th>
+              <th>Published</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for event in events %}
+            <tr>
+              <td>
+                <strong>{{ event.title }}</strong>
+                <div class="small text-muted">{{ event.description or 'No description' }}</div>
+              </td>
+              <td>{{ event.content_type }}</td>
+              <td>{{ event.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+              <td class="text-end">
+                <a href="{{ url_for('static', filename='uploads/events/' ~ event.filename) }}" target="_blank" class="btn btn-sm btn-outline-primary me-2">View</a>
+                <form action="/admin/events/{{ event.id }}/delete" method="post" class="d-inline">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                  <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="text-muted">No event posters have been published yet.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

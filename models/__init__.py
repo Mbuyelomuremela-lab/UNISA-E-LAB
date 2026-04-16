@@ -112,6 +112,16 @@ class LoginActivity(db.Model):
     lab = db.relationship('Lab')
 
 
+class EventAnnouncement(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(140), nullable=True)
+    description = db.Column(db.String(255), nullable=True)
+    filename = db.Column(db.String(255), nullable=False)
+    content_type = db.Column(db.String(120), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    active = db.Column(db.Boolean, default=True)
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))

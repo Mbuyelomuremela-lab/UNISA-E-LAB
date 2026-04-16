@@ -1,6 +1,9 @@
+import os
+import uuid
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, current_app, session
 from flask_login import login_required, current_user
-from models import User, Lab, Province, Asset, Visitor, LoginActivity, db
+from werkzeug.utils import secure_filename
+from models import User, Lab, Province, Asset, Visitor, LoginActivity, EventAnnouncement, db
 from datetime import datetime
 from services.security import generate_secure_password
 
@@ -149,6 +152,62 @@ def overview():
         selected_visitor_category=visitor_category,
         selected_date=date,
     )
+
+
+def allowed_event_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EVENT_EXTENSIONS']
+
+
+@admin_bp.route('/admin/events', methods=['GET', 'POST'])
+@login_required
+@admin_only
+def events():
+    if request.method == 'POST':
+        title = request.form.get('title', '').strip()
+        description = request.form.get('description', '').strip()
+        file = request.files.get('poster_file')
+
+        if not file or file.filename == '':
+            flash('Please select an image or PDF poster to upload.', 'danger')
+            return redirect(url_for('admin.events'))
+
+        filename = secure_filename(file.filename)
+        if not allowed_event_file(filename):
+            flash('Only PNG, JPG, JPEG, GIF, and PDF files are allowed.', 'danger')
+            return redirect(url_for('admin.events'))
+
+        unique_filename = f"{uuid.uuid4().hex}_{filename}"
+        upload_path = os.path.join(current_app.config['EVENT_UPLOAD_FOLDER'], unique_filename)
+        file.save(upload_path)
+
+        event = EventAnnouncement(
+            title=title or 'Upcoming announcement',
+            description=description,
+            filename=unique_filename,
+            content_type=file.content_type,
+            active=True,
+        )
+        db.session.add(event)
+        db.session.commit()
+        flash('Event poster uploaded successfully.', 'success')
+        return redirect(url_for('admin.events'))
+
+    events = EventAnnouncement.query.order_by(EventAnnouncement.created_at.desc()).all()
+    return render_template('admin/events.html', events=events)
+
+
+@admin_bp.route('/admin/events/<int:event_id>/delete', methods=['POST'])
+@login_required
+@admin_only
+def delete_event(event_id):
+    event = EventAnnouncement.query.get_or_404(event_id)
+    event_path = os.path.join(current_app.config['EVENT_UPLOAD_FOLDER'], event.filename)
+    if os.path.exists(event_path):
+        os.remove(event_path)
+    db.session.delete(event)
+    db.session.commit()
+    flash('Event poster deleted successfully.', 'info')
+    return redirect(url_for('admin.events'))
 
 
 @admin_bp.route('/admin/users', methods=['GET', 'POST'])

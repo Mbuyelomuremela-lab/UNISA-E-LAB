@@ -39,6 +39,11 @@
         >Trainee Login Activity</a
       >
       <a
+        class="nav-link text-white {% if request.path.startswith('/admin/events') %}active{% endif %}"
+        href="/admin/events"
+        >Events</a
+      >
+      <a
         class="nav-link text-white {% if request.path.startswith('/admin/labs') %}active{% endif %}"
         href="/admin/labs"
         >Labs & Provinces</a

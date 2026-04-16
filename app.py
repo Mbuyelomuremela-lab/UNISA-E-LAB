@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, redirect, url_for, flash, request
+from flask import Flask, redirect, url_for, flash, request, render_template
 from flask_login import current_user
 from sqlalchemy import text
 from config import Config
@@ -86,7 +86,9 @@ def create_app():
     csrf.init_app(app)
     mail.init_app(app)
 
-    from models import User, Lab, Province, Asset, Visitor, LoginActivity
+    os.makedirs(app.config['EVENT_UPLOAD_FOLDER'], exist_ok=True)
+
+    from models import User, Lab, Province, Asset, Visitor, LoginActivity, EventAnnouncement
     from routes.auth import auth_bp
     from routes.intern import intern_bp
     from routes.admin import admin_bp
@@ -106,7 +108,8 @@ def create_app():
     def home():
         if current_user.is_authenticated:
             return redirect(url_for('intern.dashboard') if current_user.role == 'intern' else url_for('admin.overview'))
-        return redirect(url_for('auth.login'))
+        events = EventAnnouncement.query.filter_by(active=True).order_by(EventAnnouncement.created_at.desc()).all()
+        return render_template('landing.html', events=events)
 
     with app.app_context():
         db.create_all()

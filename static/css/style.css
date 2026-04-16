@@ -4,6 +4,225 @@ body {
   color: #2c3e50;
 }
 
+.landing-header {
+  background: #31678e;
+  color: #ffffff;
+  padding: 0.9rem 0;
+}
+
+.landing-nav {
+  align-items: center;
+}
+
+.landing-logo {
+  height: 38px;
+  margin-right: 0.75rem;
+}
+
+.landing-nav a {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.landing-nav a:hover {
+  color: #e2eff9;
+}
+
+.landing-login-btn {
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+.landing-login-btn:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.landing-main {
+  margin-top: 4rem;
+}
+
+.landing-hero {
+  padding: 4rem 0 2rem;
+  background: #7ec2eb;
+  color: #ffffff;
+}
+
+.landing-hero h1 {
+  font-size: 2.8rem;
+  margin-bottom: 0.75rem;
+}
+
+.landing-hero p {
+  font-size: 1.05rem;
+  max-width: 680px;
+  margin: 0 auto 2rem;
+}
+
+.landing-carousel {
+  position: relative;
+  max-width: 960px;
+  margin: 0 auto;
+  background: #eaf6ff;
+  border-radius: 18px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.landing-slides {
+  flex: 1;
+  position: relative;
+  min-height: 260px;
+}
+
+.landing-slide {
+  display: none;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.landing-slide.active {
+  display: flex;
+}
+
+.landing-slide-preview {
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+}
+
+.landing-slide-preview img {
+  width: 100%;
+  max-height: 360px;
+  object-fit: contain;
+}
+
+.pdf-placeholder {
+  width: 100%;
+  min-height: 200px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 2px dashed rgba(37, 99, 235, 0.4);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.pdf-icon {
+  font-size: 3rem;
+  color: #2563eb;
+}
+
+.pdf-title {
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.pdf-description {
+  color: #475569;
+}
+
+.slide-text {
+  color: #1f2937;
+}
+
+.slide-text h5 {
+  font-size: 1.35rem;
+  margin-bottom: 0.5rem;
+}
+
+.slide-text p {
+  color: #334155;
+}
+
+.landing-carousel::before {
+  display: none;
+}
+
+.landing-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(47, 70, 89, 0.08);
+  color: #1f2937;
+  border: none;
+  cursor: pointer;
+  margin: 0 0.75rem;
+}
+
+.landing-about {
+  padding: 3.5rem 0;
+  background: #7cc6f4;
+  color: #ffffff;
+}
+
+.landing-about h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.landing-about p {
+  max-width: 720px;
+  margin: 0 auto;
+  font-size: 1rem;
+}
+
+.landing-footer {
+  background: #2d5370;
+  color: #ffffff;
+  padding: 2rem 0 1.5rem;
+}
+
+.landing-footer a {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.landing-footer a:hover {
+  text-decoration: underline;
+}
+
+.landing-footer .footer-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.75rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .landing-nav {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .landing-login-btn {
+    width: 100%;
+  }
+
+  .landing-hero h1 {
+    font-size: 2.2rem;
+  }
+
+  .landing-carousel {
+    height: 240px;
+  }
+}
+
 .navbar-brand {
   font-weight: 700;
 }
